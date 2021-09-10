@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,15 +8,19 @@ public class GameManager : MonoBehaviour
 
 
     [ContextMenu("MineGem")]
+    [System.Obsolete]
     public void MineGem()
     {
-        Color color = Color.HSVToRGB(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.4f, 1.0f));
-        int index = Random.Range(0, 18);
-        float reflectionStrength = Random.Range(0.0f, 2.0f);
-        float environmentLight = Random.Range(0.0f, 2.0f);
-        float emission = Random.Range(0.0f, 2.0f);
-        float scale = Random.Range(1.0f, 3.0f);
-        _gemViewerController.ResetGem(color, index, reflectionStrength, environmentLight, emission, scale);
+        StartCoroutine(MineGemCoroutine());
+    }
+
+    [System.Obsolete]
+    public IEnumerator MineGemCoroutine()
+    {
+        Request<GemResponse> request = OffchainClient.CreateGem(new EthereumAddress("0x0CE599133FE3619e84F38BeCF1e68A40f1a8B294"));
+        yield return StartCoroutine(request.RequestCoroutine());
+        GemParameter parameter = request.Response().GemParameter();
+        _gemViewerController.ResetGem(parameter);
         _gemViewerController.SetEnableViewer();
     }
 }

@@ -1,6 +1,50 @@
 using UnityEngine;
 using System;
 
+public class GemParameter
+{
+    const float MIN_SCALE = 1.0f;
+    const float MAX_SCALE = 3.0f;
+
+
+    public int MeshIndex { get; set; }
+    public Color Color { get; set; }
+
+    public readonly float ReflectionStrength;
+
+    public readonly float EnvironmentLight;
+
+    public readonly float Emission;
+
+    public readonly float Scale;
+    public GemParameter(int meshIndex, Color color, float reflectionStrength, float environmentLight, float emission, float scale)
+    {
+        this.MeshIndex = meshIndex;
+        this.Color = color;
+        this.ReflectionStrength = floatRangeChecked(reflectionStrength, 0.0f, 2.0f);
+        this.EnvironmentLight = floatRangeChecked(environmentLight, 0.0f, 2.0f);
+        this.Emission = floatRangeChecked(emission, 0.0f, 2.0f);
+        this.Scale = floatRangeChecked(scale, 1.0f, 3.0f);
+    }
+
+    public float ParticleEmissionRate
+    {
+        get { return 5.0f / Emission + 1; }
+    }
+
+    private static float floatRangeChecked(float value, float minInclusive, float maxInclusive)
+    {
+        if (value < minInclusive || value > maxInclusive)
+        {
+            throw new ArgumentException("invalid value");
+        }
+        else
+        {
+            return value;
+        }
+    }
+}
+
 public class GemGenerator : MonoBehaviour
 {
     [SerializeField]
@@ -9,40 +53,19 @@ public class GemGenerator : MonoBehaviour
     [SerializeField]
     private Transform _gem;
 
-    public void Reset(Color color, int gemMeshIndex, float reflectionStrength, float environmentLight, float emission, float scale)
+    public void Reset(GemParameter parameter)
     {
-        if (gemMeshIndex < 0 || gemMeshIndex >= _gemMeshes.Length)
-        {
-            throw new ArgumentException("invalid gemMeshIndex");
-        }
-        if (reflectionStrength < 0 || reflectionStrength > 2)
-        {
-            throw new ArgumentException("invalid reflectionStrength");
-        }
-        if (environmentLight < 0 || environmentLight > 2)
-        {
-            throw new ArgumentException("invalid environmentLight");
-        }
-        if (emission < 0 || emission > 2)
-        {
-            throw new ArgumentException("invalid emission");
-        }
-        var particleEmissionRate = 5.0f / emission + 1;
-        if (scale < 1 || scale > 3)
-        {
-            throw new ArgumentException("invalid scale");
-        }
-        _gem.GetComponent<MeshFilter>().mesh = _gemMeshes[gemMeshIndex];
+        _gem.GetComponent<MeshFilter>().mesh = _gemMeshes[parameter.MeshIndex];
         Renderer rend = _gem.GetComponent<Renderer>();
-        rend.sharedMaterial.SetColor("_Color", color);
-        rend.sharedMaterial.SetFloat("_ReflectionStrength", reflectionStrength);
-        rend.sharedMaterial.SetFloat("_EnvironmentLight", environmentLight);
-        rend.sharedMaterial.SetFloat("_Emission", emission);
-        _gem.transform.localScale = Vector3.one * scale;
+        rend.sharedMaterial.SetColor("_Color", parameter.Color);
+        rend.sharedMaterial.SetFloat("_ReflectionStrength", parameter.ReflectionStrength);
+        rend.sharedMaterial.SetFloat("_EnvironmentLight", parameter.EnvironmentLight);
+        rend.sharedMaterial.SetFloat("_Emission", parameter.Emission);
+        _gem.transform.localScale = Vector3.one * parameter.Scale;
         ParticleSystem particleSystem = _gem.GetComponentInChildren<ParticleSystem>();
         ParticleSystem.EmissionModule emissionModule = particleSystem.emission;
-        emissionModule.rateOverTime = particleEmissionRate;
+        emissionModule.rateOverTime = parameter.ParticleEmissionRate;
         ParticleSystem.ShapeModule shapeModule = particleSystem.shape;
-        shapeModule.radius = scale;
+        shapeModule.radius = parameter.Scale;
     }
 }

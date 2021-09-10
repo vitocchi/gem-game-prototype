@@ -16,9 +16,9 @@ public class GemViewerController : MonoBehaviour
         _camera = GetComponentInChildren<Camera>();
         _canvas = GetComponentInChildren<Canvas>();
     }
-    public void ResetGem(Color color, int gemMeshIndex, float reflectionStrength, float environmentLight, float emission, float scale)
+    public void ResetGem(GemParameter parameter)
     {
-        _gemGenerator.Reset(color, gemMeshIndex, reflectionStrength, environmentLight, emission, scale);
+        _gemGenerator.Reset(parameter);
     }
 
     public void SetEnableViewer()
