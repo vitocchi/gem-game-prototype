@@ -21,7 +21,7 @@ public class FieldController : MonoBehaviour
     private GameObject _gemPrefab;
 
     [SerializeField]
-    private GameManager _gameManager;
+    private PlayScreenManager _playScreenManager;
 
     private Map _map;
 
@@ -84,9 +84,10 @@ public class FieldController : MonoBehaviour
         return _gemAt.ContainsKey(position);
     }
 
+    [System.Obsolete]
     public void PickupGemAt((int, int) position)
     {
-        _gameManager.MineGem();
+        _playScreenManager.MineGem();
         Destroy(_gemAt[position]);
         _gemAt.Remove(position);
     }

@@ -51,21 +51,26 @@ public class GemGenerator : MonoBehaviour
     private Mesh[] _gemMeshes;
 
     [SerializeField]
-    private Transform _gem;
+    private GameObject _gemPrefab;
 
-    public void Reset(GemParameter parameter)
+    [SerializeField]
+    private float _baseScale;
+
+    public GameObject Generate(GemParameter parameter)
     {
-        _gem.GetComponent<MeshFilter>().mesh = _gemMeshes[parameter.MeshIndex];
-        Renderer rend = _gem.GetComponent<Renderer>();
+        GameObject gem = Instantiate(_gemPrefab);
+        gem.GetComponent<MeshFilter>().mesh = _gemMeshes[parameter.MeshIndex];
+        Renderer rend = gem.GetComponent<Renderer>();
         rend.sharedMaterial.SetColor("_Color", parameter.Color);
         rend.sharedMaterial.SetFloat("_ReflectionStrength", parameter.ReflectionStrength);
         rend.sharedMaterial.SetFloat("_EnvironmentLight", parameter.EnvironmentLight);
         rend.sharedMaterial.SetFloat("_Emission", parameter.Emission);
-        _gem.transform.localScale = Vector3.one * parameter.Scale;
-        ParticleSystem particleSystem = _gem.GetComponentInChildren<ParticleSystem>();
+        gem.transform.localScale = Vector3.one * _baseScale * parameter.Scale;
+        ParticleSystem particleSystem = gem.GetComponentInChildren<ParticleSystem>();
         ParticleSystem.EmissionModule emissionModule = particleSystem.emission;
         emissionModule.rateOverTime = parameter.ParticleEmissionRate;
         ParticleSystem.ShapeModule shapeModule = particleSystem.shape;
-        shapeModule.radius = parameter.Scale;
+        shapeModule.radius = _baseScale * parameter.Scale;
+        return gem;
     }
 }

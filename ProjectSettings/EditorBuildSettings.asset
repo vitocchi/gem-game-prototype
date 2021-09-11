@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/New Scene.unity
     guid: 4af6bc77622814e929cb1154d65871aa
   - enabled: 1
-    path: Assets/Sets-GemsScene.unity
+    path: Assets/Project/PlayScene.unity
     guid: 5e85c87b3519c4c1882d0539ab4830fc
   m_configObjects: {}

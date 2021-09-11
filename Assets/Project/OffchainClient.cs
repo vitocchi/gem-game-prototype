@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 
 public class OffchainClient
 {
-    //接続するURL
     private const string BASE_URL = "http://localhost:3000";
 
     public static Request<GemResponse> GetGem(int id)
